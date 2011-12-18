@@ -16,6 +16,9 @@ class okno extends Frame implements ActionListener
     	Button bNowa;
         Button bZasad;
         Plansza plansza;
+        Label lTekst;
+        Ruchy ruchy;
+	Bicia bicia;
         
 	public okno(String Nazwa, int szer, int wys)
 	{
@@ -25,6 +28,8 @@ class okno extends Frame implements ActionListener
 		setLayout(null);
 		
                 plansza = new Plansza();
+                ruchy = new Ruchy();
+		bicia = new Bicia();
                 
 		setSize(szer,wys);
 		setLocation(10,10);
@@ -54,7 +59,12 @@ class okno extends Frame implements ActionListener
 		bZasad.setSize(100,25);
 		bZasad.setLocation(450,145);	
                 bZasad.addActionListener(this);	
-	        add(bZasad);	    
+	        add(bZasad);	  
+                
+                lTekst = new Label("Gracz:");
+		lTekst.setSize(60,25);
+		lTekst.setLocation(450,200);
+		add(lTekst);
                 
        //bez tego nie wyświetlimy okna - służy do wyświetlania okna
        show();
@@ -66,7 +76,7 @@ class okno extends Frame implements ActionListener
 		{
  
                    TextArea pole1 = new TextArea();// nowy obiekt klasy TextField
-                   pole1.setBounds(10,30,400,440); // ustawienie położenia komponentu w oknie aplikacji
+                   pole1.setBounds(10,370,620,125); // ustawienie położenia komponentu w oknie aplikacji
                    String s = "Zasady gry\n"+
                               "1. Wykonywanie posunięć:\n"+
                               "# Pierwszy ruch wykonuje zawodnik grający białymi.\n"+
@@ -90,10 +100,14 @@ class okno extends Frame implements ActionListener
                               
                    pole1.setText(s);
                    add(pole1);
+                   repaint();
 		}
                 else if (cel == bNowa)
 		{
 			plansza.rozpoczecie();
+                        ruchy.zerowanie();
+			ruchy.set_gracz(1);
+			bicia.zerowanie();
 			repaint();
 		} 
 	}
@@ -148,12 +162,24 @@ class okno extends Frame implements ActionListener
 			     //............................................................................................			
 			}
 		}
+		// Gracz: aktualne kółko...
+		if (ruchy.get_gracz() != 0 )
+		{
+			g2.setColor(Color.black);
+			g2.fillOval(525,200,36,36);
 					
-	//	Image obraz = Toolkit.getDefaultToolkit().getImage("dupa.jpg");
-
+			if (ruchy.get_gracz() == 1)
+			{
+				g2.setColor(new Color(255,0,0));
+			}	
+			else
+			{
+				g2.setColor(new Color(0,255,0));
+			}
+			g2.fillOval(527,202,32,32);
+		}			
+	
 		g.drawImage(img,0,0,this);
-		
-	//	g.drawImage(obraz, 0, 0, this);  
 		
 	}
 	
@@ -180,6 +206,17 @@ class Tablica
 			{
 				pole[i][j] = 0;	
 			}
+		}
+	}
+        public void wyswietlanie()
+	{
+		for (int j = 0; j < 8; j++)	
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				System.out.print(pole[i][j] + " ");
+			}
+			System.out.println();
 		}
 	}
 }
@@ -216,4 +253,62 @@ class Plansza extends Tablica
 			for (int i = 0; i < 8; i++)
 				if (pole[i][j] == 1) pole[i][j] = 2;
 	}
+}
+
+class Ruchy extends Tablica
+{
+	private int gracz;
+	
+	public Ruchy()
+	{
+		this.set_gracz(0);
+	}
+
+	public void klikniecie(int x,int y,Plansza p, Bicia b)
+	{
+            //c.d. nastąpi......................................................
+        }
+	
+	public void set_gracz(int gracz)
+	{
+		this.gracz = gracz;
+		System.out.println("Gracz " + this.gracz);
+	}
+	
+	public int get_gracz()
+	{
+		return this.gracz;	
+	}
+	
+	public void zmiana_gracza()
+	{
+		if (this.gracz == 1)
+		{
+			this.set_gracz(2);
+		}
+		else if (this.gracz == 2)
+		{
+			this.set_gracz(1);
+		}
+	}
+	
+	public void zamien_pionki_na_damki(Plansza p)
+	{
+		if (gracz == 1)
+		{
+			for (int i = 0; i < 8; i++)
+				if (p.pole[i][0] == 2 ) p.pole[i][0] = 4;
+		}
+		else if (gracz == 2)
+		{
+			for (int i = 0; i < 8; i++)
+				if (p.pole[i][7] == 3 ) p.pole[i][7] = 5;
+		}	
+		p.wyswietlanie();	
+	}
+}
+
+class Bicia extends Tablica
+{
+
 }
